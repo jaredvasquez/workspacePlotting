@@ -52,17 +52,19 @@ for icat in xrange( nCats ):
   obs = pdfi.getObservables( dati ).first()
   obs.Print()
 
+  RFNorm = RF.Normalization(1.0,RooAbsReal.RelativeExpected)
+
   frame = obs.frame( 105, 160, opt.nbins )
   dati.plotOn( frame, RF.XErrorSize(0), RF.DataError( RooAbsData.Poisson ) )
   frame.Draw()
 
   # Draw BG only
   mu.setVal( 0. )
-  pdfi.plotOn( frame, RF.LineStyle(2), RF.LineColor( kBlue ) )
+  pdfi.plotOn( frame, RF.LineStyle(2), RF.LineColor( kBlue ), RFNorm )
 
   # Draw SM expectation
   mu.setVal( 1. )
-  pdfi.plotOn( frame, RF.LineStyle(1), RF.LineColor( kRed ) )
+  pdfi.plotOn( frame, RF.LineStyle(1), RF.LineColor( kRed ), RFNorm )
 
   # Aesthetics
   can.cd()
