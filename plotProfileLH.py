@@ -21,8 +21,6 @@ for i in xrange(3):
 npts = 121
 xmin, xmax, ymax = -0.5, 3.5, 6.0
 pts = [ (x, f(x)) for x in np.linspace( xmin, xmax, npts ) ]
-sig1 = filter( lambda x : x[1] <= 1, pts )
-sig2 = filter( lambda x : x[1] <= 4, pts )
 
 # Fill TGraphs
 for i in xrange(npts): tg[0].SetPoint( i, pts[i][0], pts[i][1] )
@@ -106,5 +104,5 @@ tl.DrawLine( x0, 0, x0, ymax )
 can.SaveAs('profile.png')
 can.SaveAs('profile.pdf')
 h.Draw('AXIS SAME')
-#raw_input('Done?')
+raw_input('Done?')
 

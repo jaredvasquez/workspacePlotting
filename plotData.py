@@ -69,7 +69,7 @@ for icat in xrange( nCats ):
   # Aesthetics
   can.cd()
   frame.SetMinimum( 1.0E-03 )
-  frame.SetMaximum( frame.GetMaximum() * 1.6 )
+  frame.SetMaximum( frame.GetMaximum() * 1.2 )
   frame.GetYaxis().SetTitle('Events / GeV')
   frame.GetXaxis().SetTitle('m_{#gamma#gamma} [GeV]')
   frame.Draw('SAME')
