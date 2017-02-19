@@ -4,6 +4,11 @@ from ROOT import *
 RF = RooFit
 gROOT.SetBatch(ROOT.kTRUE)
 
+# fix TLatex from making everything bold
+# ---------------------------------------------------------------
+def DrawNDC(self, x, y, text): self.DrawLatexNDC( x, y, '#bf{ %s }' % text )
+TLatex.DrawNDC = DrawNDC
+
 import os, sys
 from optparse import OptionParser
 
@@ -33,8 +38,9 @@ nCats   = datList.GetEntries()
 #bins = RooBinning( 55, 105.,160. )
 
 can = TCanvas()
-can.SetTopMargin( 0.08 )
-can.SetRightMargin( 0.05 )
+can.SetMargin( 0.12, 0.04, 0.14, 0.04 )
+#can.SetTopMargin( 0.08 )
+#can.SetRightMargin( 0.05 )
 
 outPATH = 'plots/dataPdf/%s' % opt.dataset
 if not os.path.exists( outPATH ):
@@ -55,8 +61,8 @@ for icat in xrange( nCats ):
   RFNorm = RF.Normalization(1.0,RooAbsReal.RelativeExpected)
 
   frame = obs.frame( 105, 160, opt.nbins )
+  frame.SetTitle("")
   dati.plotOn( frame, RF.XErrorSize(0), RF.DataError( RooAbsData.Poisson ) )
-  frame.Draw()
 
   # Draw BG only
   mu.setVal( 0. )
@@ -66,22 +72,33 @@ for icat in xrange( nCats ):
   mu.setVal( 1. )
   pdfi.plotOn( frame, RF.LineStyle(1), RF.LineColor( kRed ), RFNorm )
 
+  # Re-draw data to go over pdfs
+  dati.plotOn( frame, RF.XErrorSize(0), RF.DataError( RooAbsData.Poisson ) )
+
+  frame.Draw()
+
   # Aesthetics
   can.cd()
   frame.SetMinimum( 1.0E-03 )
   frame.SetMaximum( frame.GetMaximum() * 1.2 )
+  frame.GetYaxis().SetTitleSize(0.042)
+  frame.GetXaxis().SetTitleSize(0.042)
+  frame.GetYaxis().SetTitleOffset(1.25)
+  frame.GetXaxis().SetTitleOffset(1.25)
   frame.GetYaxis().SetTitle('Events / GeV')
   frame.GetXaxis().SetTitle('m_{#gamma#gamma} [GeV]')
   frame.Draw('SAME')
 
   l = TLatex()
-  l.SetNDC()
+  l.SetTextSize(0.05)
+  l.DrawNDC( 0.69, 0.900, '#bf{#it{ATLAS}} Internal')
   l.SetTextSize(0.042)
-  l.DrawLatex( 0.650, 0.785, '#bf{#sqrt{s} = 13 TeV, 13.3 fb^{-1}}')
-  l.DrawLatex( 0.610, 0.740, '#bf{H#rightarrow#gamma#gamma, m_{H} = 125.09 GeV}')
+  l.DrawNDC( 0.66, 0.845, '#sqrt{s} = 13 TeV, 36.5 fb^{-1}')
+  l.DrawNDC( 0.62, 0.795, 'H#rightarrow#gamma#gamma, m_{H} = 125.09 GeV')
+  l.DrawNDC( 0.15, 0.900, chanName)
 
   can.Update()
-  can.SaveAs( os.path.join( outPATH, 'Cat%d_%s.png' % (icat,chanName) ) )
+  can.SaveAs( os.path.join( outPATH, 'Cat%d_%s.pdf' % (icat,chanName) ) )
   can.Clear()
 
 print ''

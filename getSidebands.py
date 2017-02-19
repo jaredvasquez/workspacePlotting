@@ -9,13 +9,11 @@ from optparse import OptionParser
 
 parser = OptionParser()
 parser.add_option( '-f', '--file', type=str, default='workspace/WS-HGam-STXS.root' )
-
 parser.add_option( '-p', '--poi', type=str, default='mu' )
 parser.add_option( '-d', '--dataset', type=str, default='combData' )
 parser.add_option( '-w', '--workspace', type=str, default='combWS' )
 parser.add_option( '--modelconfig', type=str, default='ModelConfig' )
 parser.add_option( '--nbins', type=int, default=55 )
-
 opt, args = parser.parse_args()
 
 outPATH = 'plots/sidebands/%s' % opt.dataset
