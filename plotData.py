@@ -93,7 +93,7 @@ for icat in xrange( nCats ):
   l.SetTextSize(0.05)
   l.DrawNDC( 0.69, 0.900, '#bf{#it{ATLAS}} Internal')
   l.SetTextSize(0.042)
-  l.DrawNDC( 0.66, 0.845, '#sqrt{s} = 13 TeV, 36.5 fb^{-1}')
+  l.DrawNDC( 0.66, 0.845, '#sqrt{s} = 13 TeV, 36.1 fb^{-1}')
   l.DrawNDC( 0.62, 0.795, 'H#rightarrow#gamma#gamma, m_{H} = 125.09 GeV')
   l.DrawNDC( 0.15, 0.900, chanName)
 
