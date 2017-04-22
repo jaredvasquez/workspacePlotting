@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import ROOT; ROOT.PyConfig.IgnoreCommandLineOptions = True
 from ROOT import *
 
@@ -8,6 +9,31 @@ gROOT.SetBatch(ROOT.kTRUE)
 # ---------------------------------------------------------------
 def DrawNDC(self, x, y, text): self.DrawLatexNDC( x, y, '#bf{ %s }' % text )
 TLatex.DrawNDC = DrawNDC
+
+def iterate( args ):
+  iter = args.createIterator()
+  var = iter.Next()
+  while var:
+    yield var
+    var = iter.Next()
+
+def drawLegend(x,y):
+  tl = TLine()
+  tt = TLatex()
+  tt.SetTextSize(0.038)
+  tl.SetLineWidth(3)
+  tl.SetLineColor(kRed)
+  tl.DrawLineNDC(x,y,x+0.04,y)
+  tt.DrawNDC( x+0.05, y-0.015, 'Fitted Signal')
+  y -= 0.05
+  tl.SetLineColor(kGreen+1)
+  tl.DrawLineNDC(x,y,x+0.04,y)
+  tt.DrawNDC( x+0.05, y-0.015, 'SM Signal')
+  y -= 0.05
+  tl.SetLineStyle(2)
+  tl.SetLineColor(kBlue)
+  tl.DrawLineNDC(x,y,x+0.04,y)
+  tt.DrawNDC( x+0.05, y-0.015, 'BG Only')
 
 import os, sys
 from optparse import OptionParser
@@ -26,6 +52,8 @@ opt, args = parser.parse_args()
 tf = TFile( opt.file )
 ws = tf.Get( opt.workspace )
 mc = ws.obj( opt.modelconfig )
+
+ws.saveSnapshot( 'orig', mc.GetParametersOfInterest() )
 
 dat = ws.obj( opt.dataset )
 mu  = ws.obj( opt.poi )
@@ -70,6 +98,12 @@ for icat in xrange( nCats ):
 
   # Draw SM expectation
   mu.setVal( 1. )
+  for poi in iterate(mc.GetParametersOfInterest()): poi.setVal( 1. )
+  pdfi.plotOn( frame, RF.LineStyle(1), RF.LineColor( kGreen+1 ), RFNorm )
+
+  # Draw post-fit
+  mu.setVal( 1. )
+  ws.loadSnapshot('orig')
   pdfi.plotOn( frame, RF.LineStyle(1), RF.LineColor( kRed ), RFNorm )
 
   # Re-draw data to go over pdfs
@@ -88,6 +122,8 @@ for icat in xrange( nCats ):
   frame.GetYaxis().SetTitle('Events / GeV')
   frame.GetXaxis().SetTitle('m_{#gamma#gamma} [GeV]')
   frame.Draw('SAME')
+
+  drawLegend(0.40,0.92)
 
   l = TLatex()
   l.SetTextSize(0.05)
