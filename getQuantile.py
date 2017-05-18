@@ -4,7 +4,6 @@ from math import sqrt, log
 
 import sys
 RF = RooFit
-
 CLbound = 68
 CLbound = 90
 
@@ -26,6 +25,7 @@ sigModPrefix = "PDF__ttH_"
 sbModPrefix = "_modelSB_"
 
 output = []
+ratios = []
 
 pdf = mc.GetPdf()
 cat = pdf.indexCat()
@@ -129,6 +129,14 @@ for icat in xrange( nCats ):
 
   f = s/float(s+b)
   Z = sqrt( 2*((s+b)*log(1+s/b)-s) )
+  r = log( 1 + s/float(b) )
+  l = '%25s  :  %4.2f'  % (catName, r)
+  ratios.append(l)
+  print ''
+  print ''
+  print l
+  print ''
+  print ''
 
   CL = CLbound
   #line = "  %20s :    B%d = %8.2f    S%d = %8.2f" % (catName, CL, b, CL, s )
@@ -162,4 +170,8 @@ for catName in sigmas:
 
 print '\n'
 for line in output:
+  print line
+
+print '\n'
+for line in ratios:
   print line
