@@ -1,8 +1,18 @@
+#!/usr/bin/env python
+import sys
+import math
 import yaml
 from ROOT import *
 from math import sqrt, log
 
-import sys
+def sigfigs(num, sig_figs):
+  if num == 0: return 0
+  num = round(num, -int(math.floor(math.log10(abs(num))) - (sig_figs - 1)))
+  if (num > 10): return int(num)
+  return num
+
+rename = yaml.load(open('rename_chan.yml'))
+
 RF = RooFit
 CLbound = 68
 CLbound = 90
@@ -118,7 +128,6 @@ for icat in xrange( nCats ):
 
   Ns = sigYields[catName]
   s = CLbound*0.01*Ns
-  s = Ns
 
   #ws.loadSnapshot("ucmles_1") # signal+background, post-fit snapshot
   #ws.loadSnapshot("ucmles") # signal+background, post-fit snapshot
@@ -148,7 +157,12 @@ for icat in xrange( nCats ):
     output.append(line)
     output.append("\\hline")
 
-  line = " %25s  &  %8.2f  &  %8.2f  &  %8.2f  &  %8.2f  \\\\" % (catName, b, s, f, Z )
+  s, b = sigfigs(s,2), sigfigs(b,2)
+  cname = catName
+  if cname in rename:
+    cname = rename[cname]
+
+  line = " %25s  &  %8.2f  &  %8.2f  &  %8.2f  &  %8.2f  \\\\" % (cname, s, b, f, Z )
   output.append(line)
 
   print '\n\n'

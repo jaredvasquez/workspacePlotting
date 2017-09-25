@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 import ROOT; ROOT.PyConfig.IgnoreCommandLineOptions = True
 from ROOT import *
+import yaml
 
 RF = RooFit
 gROOT.SetBatch(ROOT.kTRUE)
+
+rename = yaml.load(open('rename_chan.yml'))
 
 # fix TLatex from making everything bold
 # ---------------------------------------------------------------
@@ -39,7 +42,7 @@ import os, sys
 from optparse import OptionParser
 
 parser = OptionParser()
-parser.add_option( '-f', '--file', type=str, default='workspace/WS-HGam-STXS.root' )
+parser.add_option( '-f', '--file', type=str, default='workspaces/WS-HGam-STXS.root' )
 
 parser.add_option( '-p', '--poi', type=str, default='mu' )
 parser.add_option( '-d', '--dataset', type=str, default='AsimovSB' )
@@ -53,7 +56,7 @@ tf = TFile( opt.file )
 ws = tf.Get( opt.workspace )
 mc = ws.obj( opt.modelconfig )
 
-ws.saveSnapshot( 'orig', mc.GetParametersOfInterest() )
+#ws.saveSnapshot( 'orig', mc.GetParametersOfInterest() )
 
 dat = ws.obj( opt.dataset )
 mu  = ws.obj( opt.poi )
@@ -93,17 +96,18 @@ for icat in xrange( nCats ):
   dati.plotOn( frame, RF.XErrorSize(0), RF.DataError( RooAbsData.Poisson ) )
 
   # Draw BG only
+  ws.loadSnapshot('original')
   mu.setVal( 0. )
   pdfi.plotOn( frame, RF.LineStyle(2), RF.LineColor( kBlue ), RFNorm )
 
   # Draw SM expectation
-  mu.setVal( 1. )
+  mu.setVal( 1.0 )
   for poi in iterate(mc.GetParametersOfInterest()): poi.setVal( 1. )
   pdfi.plotOn( frame, RF.LineStyle(1), RF.LineColor( kGreen+1 ), RFNorm )
 
   # Draw post-fit
   mu.setVal( 1. )
-  ws.loadSnapshot('orig')
+  ws.loadSnapshot('ucmles')
   pdfi.plotOn( frame, RF.LineStyle(1), RF.LineColor( kRed ), RFNorm )
 
   # Re-draw data to go over pdfs
@@ -131,7 +135,7 @@ for icat in xrange( nCats ):
   l.SetTextSize(0.042)
   l.DrawNDC( 0.66, 0.845, '#sqrt{s} = 13 TeV, 36.1 fb^{-1}')
   l.DrawNDC( 0.62, 0.795, 'H#rightarrow#gamma#gamma, m_{H} = 125.09 GeV')
-  l.DrawNDC( 0.15, 0.900, chanName)
+  l.DrawNDC( 0.15, 0.900, rename[chanName])
 
   can.Update()
   can.SaveAs( os.path.join( outPATH, 'Cat%d_%s.pdf' % (icat,chanName) ) )

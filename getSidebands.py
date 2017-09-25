@@ -8,7 +8,7 @@ import os, sys
 from optparse import OptionParser
 
 parser = OptionParser()
-parser.add_option( '-f', '--file', type=str, default='workspace/WS-HGam-STXS.root' )
+parser.add_option( '-f', '--file', type=str, default='workspaces/WS-HGam-STXS.root' )
 parser.add_option( '-p', '--poi', type=str, default='mu' )
 parser.add_option( '-d', '--dataset', type=str, default='combData' )
 parser.add_option( '-w', '--workspace', type=str, default='combWS' )
@@ -87,7 +87,7 @@ for icat in xrange( nCats ):
   l.DrawLatex( 0.610, 0.740, 'H#rightarrow#gamma#gamma, m_{H} = 125.09 GeV')
 
   can.Update()
-  can.SaveAs( os.path.join( outPATH, 'Cat%d_%s.png' % (icat,chanName) ) )
+  can.SaveAs( os.path.join( outPATH, 'Cat%d_%s.pdf' % (icat,chanName) ) )
   can.Clear()
 
 print ''
